@@ -1,0 +1,10 @@
+server:
+  port: 31078
+  max-http-header-size: 48000
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS:500}
+    mbeanregistry:
+      enabled: true
+  shutdown: "graceful"
+
