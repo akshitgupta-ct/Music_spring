@@ -1,12 +1,11 @@
 package com.spotify;
 
-import com.spotify.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/music")
@@ -40,5 +39,36 @@ public class MusicPlayerController {
         }
     }
 
+     @PostMapping("/playlists")
+    public String createPlaylist(@RequestParam String playlistName) {
+        try {
+            musicPlayerService.createPlaylist(playlistName);
+            return "Playlist '" + playlistName + "' created successfully!";
+        } catch (Exception e) {
+            return "Error creating playlist: " + e.getMessage();
+        }
+    }
 
+     @PostMapping("/playlists/{playlistName}/add")
+    public String addSongToPlaylist(@PathVariable String playlistName, @RequestBody Song song) {
+        try {
+            musicPlayerService.addSongToPlaylist(playlistName, song);
+            return "Added song: " + song.getTitle() + " to playlist: " + playlistName;
+        } catch (Exception e) {
+            return "Error adding song to playlist: " + e.getMessage();
+        }
+    }
+
+
+    @GetMapping("/playlists")
+    public Map<String, Playlist> getAllPlaylists() {
+        return musicPlayerService.getAllPlaylists();
+    }
+
+
+    //http://localhost:31078/api/music/playlists/{MyPlaylist,name of playlist}/add
+    @GetMapping("/playlists/{playlistName}")
+    public Playlist getPlaylist(@PathVariable String playlistName) {
+        return musicPlayerService.getPlaylist(playlistName);
+    }
 }

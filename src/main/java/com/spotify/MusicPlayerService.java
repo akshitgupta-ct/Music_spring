@@ -1,24 +1,24 @@
 package com.spotify;
 
-import com.spotify.*;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
 public class MusicPlayerService {
     private List<Song> songLibrary;
+    private Map<String, Playlist> playlists;
     private ExecutorService executor;
 
     public MusicPlayerService() {
         this.songLibrary = new ArrayList<>();
-        this.executor = Executors.newSingleThreadExecutor();
+        this.playlists = new HashMap<>();
+//        this.executor = Executors.newSingleThreadExecutor();
     }
 
     public void loadSongs(String filePath) throws IOException {
@@ -49,15 +49,43 @@ public class MusicPlayerService {
     public void playSong(Song song) {
         executor.submit(() -> {
             System.out.println("Now playing: " + song);
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+//            try {
+//                Thread.sleep(3000); // Simulate playing time
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//            }
         });
     }
 
-    public void shutdown() {
-        executor.shutdown();
+//    public void shutdown() {
+//        executor.shutdown();
+//    }
+
+    // Playlist management
+    public void createPlaylist(String playlistName) {
+        if (playlists.containsKey(playlistName)) {
+            throw new IllegalArgumentException("Playlist already exists: " + playlistName);
+        }
+        playlists.put(playlistName, new Playlist(playlistName));
+    }
+
+    public void addSongToPlaylist(String playlistName, Song song) {
+        Playlist playlist = playlists.get(playlistName);
+        if (playlist == null) {
+            throw new IllegalArgumentException("Playlist not found: " + playlistName);
+        }
+        playlist.addSong(song);
+    }
+
+    public Map<String, Playlist> getAllPlaylists() {
+        return playlists;
+    }
+
+    public Playlist getPlaylist(String playlistName) {
+        Playlist playlist = playlists.get(playlistName);
+        if (playlist == null) {
+            throw new IllegalArgumentException("Playlist not found: " + playlistName);
+        }
+        return playlist;
     }
 }
